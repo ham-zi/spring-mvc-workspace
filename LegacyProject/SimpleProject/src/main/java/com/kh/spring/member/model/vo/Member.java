@@ -1,0 +1,18 @@
+package com.kh.spring.member.model.vo;
+
+import java.sql.Date;
+import java.util.Objects;
+
+import lombok.Value;
+
+@Value
+public class Member {
+	  private String userId;   
+	  private String userPwd;
+	  private String userName;            
+	  private String email;   
+	  private Date enrollDate;
+	  private Date modifyDate;
+	  private String status;
+
+}
