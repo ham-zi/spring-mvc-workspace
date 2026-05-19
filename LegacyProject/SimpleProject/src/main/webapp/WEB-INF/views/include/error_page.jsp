@@ -13,7 +13,7 @@
     <br>
     <div align="center">
         <img src="https://cdn2.iconfinder.com/data/icons/oops-404-error/64/208_balloon-bubble-chat-conversation-sorry-speech-256.png">
-        <br><br>
+        <br>${ message }<br>
         <h1 style="font-weight:bold;"></h1>
     </div>
     <br>

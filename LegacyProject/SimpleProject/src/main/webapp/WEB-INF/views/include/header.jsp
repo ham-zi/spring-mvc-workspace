@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,16 +66,19 @@
             </div>
             <div id="header_1_center"></div>
             <div id="header_1_right">
+            
                 <!-- 로그인 전 -->
-                <a href="">회원가입</a>
-                <a data-toggle="modal" data-target="#loginModal">로그인</a> <!-- 모달의 원리 : 이 버튼 클릭시 data-targer에 제시되어있는 해당 아이디의 div요소를 띄워줌 -->
-                
-                <!-- 로그인 후 -->
-                <!-- 
-                    <lable>홍길동님 환영합니다</label> &nbsp;&nbsp;
-                    <a href="">마이페이지</a>
-                    <a href="">로그아웃</a>
-                -->
+                <c:choose>
+                	<c:when test="${ empty userInfo }">
+		                <a href="signup">회원가입</a>
+		                <a data-toggle="modal" data-target="#loginModal">로그인</a> <!-- 모달의 원리 : 이 버튼 클릭시 data-targer에 제시되어있는 해당 아이디의 div요소를 띄워줌 -->
+                	</c:when>
+		            <c:otherwise>
+	                    <label>${ userInfo.userName }님 환영합니다</label> &nbsp;&nbsp;
+	                    <a href="">마이페이지</a>
+	                    <a href="logout">로그아웃</a>           
+		            </c:otherwise>    
+                </c:choose>
             </div>
         </div>
         <div id="header_2">

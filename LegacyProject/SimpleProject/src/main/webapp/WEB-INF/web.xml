@@ -6,7 +6,10 @@
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+		<param-value>
+		/WEB-INF/spring/root-context.xml
+		/WEB-INF/spring/security-context.xml
+		</param-value>
 	</context-param>
 	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
@@ -29,4 +32,39 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	<!-- 
+		*Filter
+	모든 요청 처리 전 공통적으로 수행해야하는 기능들을
+	클라이언트의 요청을 Servlet이 받기 전 먼저 필터링해서 수행할 수 있도록 함
+	web.xml에 기술해서 해당 작성내용이 서버구동과 동시에 일어날수 있도록 세팅
+	
+	* 스프링에서 인코딩을 위해서 만들어진 필터
+	- org.springframework.web.filter.characterEncodingFilter
+	- <filter> + <filter-mapping>
+	
+	 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+	 	<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 
+		/* => 모든 요청을 다 처리
+		/login, /members, /style.css, / KH_.jph 등
+	
+		/ => 기본값 담당 Default Servlet Mapping 매핑 / 어떤 서블릿도 안걸리면 처리 
+	 -->
+	
 </web-app>
