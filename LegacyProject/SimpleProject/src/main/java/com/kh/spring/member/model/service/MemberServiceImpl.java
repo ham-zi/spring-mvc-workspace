@@ -1,5 +1,7 @@
 package com.kh.spring.member.model.service;
 
+import javax.servlet.http.HttpSession;
+
 import org.mybatis.spring.SqlSessionTemplate;
 
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kh.spring.exception.AuthorizationException;
 import com.kh.spring.exception.InvalidParameterException;
 import com.kh.spring.exception.TooLargeValueException;
 import com.kh.spring.member.model.dao.MemberDao;
@@ -133,15 +136,47 @@ public class MemberServiceImpl{
 	}
 	
 	private void checkBlank(MemberDto member) {
+		checkUserPwd(member);
+		checkUserId(member);
+		checkUserName(member);
+	}
+	
+	private void checkUserId(MemberDto member) {
 		if(member.getUserId() == null ||
-			member.getUserId().trim().isEmpty() ||
-			member.getUserPwd() == null ||
-			member.getUserPwd().trim().isEmpty() ||
+		   member.getUserId().trim().isEmpty()) {
+			throw new InvalidParameterException("유효하지 않는 값입니다.");
+
+		}
+	}
+	private void checkUserPwd(MemberDto member) {
+		if(member.getUserPwd() == null ||
+		   member.getUserPwd().trim().isEmpty()){
+				throw new InvalidParameterException("유효하지 않는 값입니다.");
+		}
+	}
+	private void checkUserName(MemberDto member) {
+		if(
 			member.getUserName() == null ||
 			member.getUserName().trim().isEmpty()) {
 			throw new InvalidParameterException("유효하지 않는 값입니다.");
 		}
-				
+	}
+	
+	private void checkNull(MemberDto member) {
+		if(member == null) {
+			throw new NullPointerException("잘못된 접근입니다.");
+		}
+	}
+	
+	private void validateUpdateMember(MemberDto member, MemberDto sessionMember) {
+		checkNull(member);
+		checkNull(sessionMember);
+		checkUserName(member);
+		checkUserId(member);
+		if(!member.getUserId().equals(sessionMember.getUserId())) {
+			throw new AuthorizationException("권한없는 접근입니다.");
+		}
+		checkNull(memberMapper.login(member));
 	}
 	
 	
@@ -173,4 +208,59 @@ public class MemberServiceImpl{
 		
 	}
 	*/
+	
+	public void update(MemberDto member, HttpSession session) {
+		
+		MemberDto sessionMember = ((MemberDto)session.getAttribute("userInfo"));
+		
+		// 구체적으로 생각해야한다
+		//앞단에서 넘어온 아이디값과 로그인된 사용자의 ID값이 일치하는가?
+		//실제 DB에 ID값이 존재하는 회원인가?
+		//USERNAME컬럼에 넣을 값이 USERNAME컬럼크기보다 크지 않은가?
+		//EMAIL컬럼에 넣을 값이 EMAIL컬럼 크기보다 크지 않은가?
+		//빈문자열 등등
+		
+		
+		// DB가서 UPDATE
+		
+		// 업데이트가 성공적으로 수행되었는가?
+		// 수정된 정보를 DB에서 SELECT => sessionScope에 존재하는 userInfo 키값의 MemberDto객체 필드값을 갱신
+		validateUpdateMember(member, sessionMember);
+		int result = memberMapper.update(member);
+		
+		if(result != 1) {
+			throw new AuthorizationException("문제가 발생했습니다. 관리자에게 문의하세요");
+		}
+		sessionMember.setUserName(member.getUserName());
+		sessionMember.setEmail(member.getEmail());
+	}
+	
+	public void delete(String userId, String userPwd, HttpSession session) {
+		
+		MemberDto sessionMember = ((MemberDto)session.getAttribute("userInfo"));
+		checkNull(sessionMember);
+		if(!userId.equals(sessionMember.getUserId())) {
+			throw new AuthorizationException("권한없는 접근입니다.");
+		}
+		
+		String encPassword = memberMapper.login(sessionMember).getUserPwd();
+		if(!passwordEncoder.matches(userPwd, encPassword)) {
+			throw new AuthorizationException("비밀번호가 일치하지 않습니다.");
+		}
+		
+		int result = memberMapper.delete(userId);
+		
+		if(result != 1) {
+			throw new AuthorizationException("관리자에게 문의하세요");
+		}
+		
+		session.removeAttribute("userInfo");
+		
+	}
+	public String checkId(String id) {
+		return memberMapper.checkId(id);
+	}
+	
+	
+	
 }

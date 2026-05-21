@@ -3,7 +3,7 @@ package com.kh.spring.member.controller;
 
 
 import java.io.UnsupportedEncodingException;
-
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.spring.member.model.dto.MemberDto;
@@ -185,6 +188,44 @@ public class MemberController {
 		return "main";
 	}
 	
+	@GetMapping("mypage")
+	public String myPage() {
+		return "member/mypage";
+	}
 	
+	@PostMapping("members/{userId}")
+	public String update(MemberDto member,@PathVariable(name="userId") String userId, HttpSession session) {
+		
+		/*
+		 * Best Practice
+		 * 
+		 * 컨트롤러에서 세션관리를 담당
+		 * 서비스에서 HttpSession이 필요하다면 메소드 호출 시 인자로 전달
+		 * 
+		 */
+		
+		
+		
+		memberService.update(member, session);
+		
+		return "redirect:/mypage";
+	}
+	
+	@PostMapping("members/{userId}/delete")
+	public String delete(@RequestParam(value="userPwd") String userPwd, @PathVariable(value="userId") String userId, HttpSession session) {
+		
+		memberService.delete(userPwd, userId, session);
+		
+		
+		return "redirect:/";
+	}
+	// 201 create
+	// 200 성공
+	
+	@ResponseBody
+	@GetMapping(value="checkId", produces="application/json; charset=UTF-8")
+	public Map<String, String> checkId(@RequestParam(value="id")String id){
+		return Map.of("result", memberService.checkId(id));
+	}
 	
 }

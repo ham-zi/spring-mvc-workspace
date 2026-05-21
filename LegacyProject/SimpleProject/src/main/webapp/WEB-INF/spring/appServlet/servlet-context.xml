@@ -23,6 +23,12 @@
 	
 	<context:component-scan base-package="com.kh.spring" />
 	
-	
+	<interceptors>
+		<interceptor>
+			<mapping path="/mypage/**"/>
+			<mapping path="/boards/form/**"/>
+			<beans:bean class="com.kh.spring.interceptor.LoginInterceptor" id="loginInterceptor"/>
+		</interceptor>
+	</interceptors>
 	
 </beans:beans>
