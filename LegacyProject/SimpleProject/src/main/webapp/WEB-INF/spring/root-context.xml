@@ -43,7 +43,7 @@
 	<!-- 
 		SqlSession sqlSession = new SqlSessionTemplate(sqlSessionFactory);
 	 -->
-	<mybatis-spring:scan base-package="com.kh.spring.member.model.dao, com.kh.spring.board.model.dao"/>
+	<mybatis-spring:scan base-package="com.kh.spring.member.model.dao, com.kh.spring.board.model.dao, com.kh.spring.image.model.dao"/>
 	
 	<!-- 파일 업로드 관련 빈 등록 -->
 	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">

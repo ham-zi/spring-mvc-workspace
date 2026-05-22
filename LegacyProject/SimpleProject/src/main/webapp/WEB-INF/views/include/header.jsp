@@ -86,7 +86,7 @@
                 <li><a href="">HOME</a></li>
                 <li><a href="">공지사항</a></li>
                 <li><a href="boards">자유게시판</a></li>
-                <li><a href="">사진게시판</a></li>
+                <li><a href="/spring/images">사진게시판</a></li>
             </ul>
         </div>
     </div>

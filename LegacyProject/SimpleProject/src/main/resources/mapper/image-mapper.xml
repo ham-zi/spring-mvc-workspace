@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.spring.image.model.dao.ImageMapper">
+	
+	<sql id="imageSelect">
+			SELECT
+		       IMAGE_NO
+		     , IMAGE_WRITER
+		     , IMAGE_TITLE
+		     , IMAGE_CONTENT
+		     , COUNT
+		     , CREATE_DATE
+		     , IMAGE_EXIST
+		  FROM
+		       IMAGE
+	</sql>
+
+
+	<select id="imagesCount" resultType="_int">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       IMAGE
+		 WHERE
+		       STATUS = 'Y'
+	</select>
+	
+	<select id="findImages" resultType="com.kh.spring.image.model.dto.ImageDto">
+		<include refid="imageSelect"/>
+		 WHERE
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       IMAGE_NO DESC
+	</select>
+	
+	<select id="findAttachment" resultType="com.kh.spring.image.model.dto.AttachmentDto">
+		SELECT
+	           ATTACHMENT_NO
+	         , REF_INO
+	         , ORIGIN_NAME
+	         , CHANGE_NAME
+	         , FILE_PATH
+	         , FILE_LEVEL
+		  FROM
+		       IMAGE_ATTACHMENT
+		 WHERE
+		       REF_INO = #{refIno}
+		   AND
+		       FILE_LEVEL = 'M' 
+	</select>
+	
+	<insert id="insertImage">
+  		<selectKey order="AFTER" resultType="Long" keyProperty="imageNo">
+  			SELECT MAX(IMAGE_NO) FROM IMAGE
+  		</selectKey>
+		INSERT
+		  INTO
+		       IMAGE
+	    VALUES
+	           (
+	           SEQ_INO.NEXTVAL
+	         , #{imageWriter}
+	         , #{imageTitle}
+	         , #{imageContent}
+	         , 0
+	         , SYSDATE
+	         , #{imageExist}
+	         , 'Y'
+	           )
+	</insert>
+	
+	<insert id="insertAttachment">
+		INSERT
+		  INTO
+		       IMAGE_ATTACHMENT
+		VALUES
+		       (
+		       SEQ_ANO.NEXTVAL
+		     , #{refIno}
+		     , #{originName}
+		     , #{changeName}
+		     , #{filePath}
+		     , #{fileLevel}
+		       )       
+	</insert>
+
+</mapper>
